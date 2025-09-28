@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const submissionSchema = new mongoose.Schema({
-  team_id: {
+  user_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Team',
+    ref: 'user',
     required: true
   },
   question_id: {
@@ -33,7 +33,7 @@ const submissionSchema = new mongoose.Schema({
 // submissionSchema.index({ team_id: 1, questions_id: 1 }, { unique: true });
 
 // Index for better query performance
-submissionSchema.index({ team_id: 1 });
+submissionSchema.index({ user_id: 1 });
 submissionSchema.index({ questions_id: 1 });
 submissionSchema.index({ iscorrect: 1 });
 submissionSchema.index({ submitted_at: -1 }); // For recent submissions queries
