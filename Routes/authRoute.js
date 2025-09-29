@@ -8,7 +8,5 @@ router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 // Logout
 router.post('/logout', authController.logout);
-// Refresh token
-router.post('/refresh', authController.refresh);
 
 module.exports = router;
