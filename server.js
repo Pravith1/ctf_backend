@@ -1,11 +1,13 @@
 const express = require('express');
 const connectDB = require('./utils/db');
 require('dotenv').config();
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
 // Basic middleware
 app.use(express.json());
+app.use('/api/admin', adminRoutes);
 
 connectDB().then(() => {
   app.listen(process.env.PORT || 5000, (err) => {

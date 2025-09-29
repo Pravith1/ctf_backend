@@ -69,7 +69,9 @@ This table outlines the current sprint's major development components and their 
 | Task Component | Owner | Status |
 | :--- | :--- | :--- |
 | **Authentication, Middleware** | Saran,Mugilan | $\square$ |
-| **Admin Controller** | Srimathi | $\square$ |
+| **Admin Controller** | Srimathi | $\checkmark$ |
+Dummy asyncHandler, ApiResponse utilities and middleware have been added temporarily for testing the admin controller. These can be replaced with the official team versions later.
+
 | **User Controller: Category Fetch,Question Fetch** | Mugilan | $\square$ |
 | **User Controller: Question Submision and point update** | Revanth | $\square$ |
 | **User Controller: Question Submission** | User Controller | $\square$ |
