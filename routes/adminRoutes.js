@@ -3,7 +3,8 @@ const router = express.Router();
 const adminController = require('../controllers/adminController');
 
 // middleware provided for authentication and admin check
-const { verifyToken, isAdmin } = require('../middleware/auth');
+const { isAdmin } = require('../middleware/auth');
+const {verifyToken} = require('../middleware/validate');
 
 router.get('/categories', verifyToken, isAdmin, adminController.getCategories);
 router.post('/categories', verifyToken, isAdmin, adminController.createCategory);
