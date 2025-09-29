@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,   // no duplicate emails allowed
     lowercase: true, // store in lowercase
-    trim: true       
+    trim: true
   },
   team_name: {
     type: String,
@@ -41,4 +41,4 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('user', userSchema);

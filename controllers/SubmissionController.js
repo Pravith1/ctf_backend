@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Submission = require('../models/Submission');
 const Team = require('../models/Team'); // Needed for updating team score
-const Question = require('../models/Question'); // Needed for updating question points
+const Question = require('../models/question'); // Needed for updating question points
 
 const handleSubmission = async (req, res) => {
   // Assuming a middleware has already validated and attached 'team' and 'question'
