@@ -7,6 +7,18 @@ const userSchema = new mongoose.Schema({
     required: true,
     default: 'user'
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true,   // no duplicate emails allowed
+    lowercase: true, // store in lowercase
+    trim: true       
+  },
+  team_name: {
+    type: String,
+    required: true,
+    trim: true
+  },
   password: {
     type: String,
     required: true
@@ -15,21 +27,18 @@ const userSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  roll_no: {
-    type: String,
-    required: true,
-    unique: true
+  point: {
+    type: Number,
+    default: 0,
+    min: 0
   },
-  team_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Team',
-    required: false
+  solved_no: {
+    type: Number,
+    default: 0,
+    min: 0
   }
 }, {
   timestamps: true
 });
-
-// Index for better query performance
-userSchema.index({ team_id: 1 });
 
 module.exports = mongoose.model('User', userSchema);
