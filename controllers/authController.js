@@ -11,10 +11,6 @@ const generateAccessToken = (user) => {
 		{ expiresIn: '1d' }
 	);
 };
-
-
-
-
 // Signup (all fields required, only user role allowed here)
 exports.signup = async (req, res) => {
 	try {

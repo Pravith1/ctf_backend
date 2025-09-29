@@ -1,15 +1,21 @@
 const express = require('express');
 const connectDB = require('./utils/db');
 require('dotenv').config();
-const adminRoutes = require('./routes/adminRoutes');
+const adminRoutes = require('./Routes/adminRoutes');
 const cookieParser = require('cookie-parser');
 
 const app = express();
+const cors = require('cors');
 
+app.use(cors({
+    origin: 'http://localhost:3000', // your frontend URL
+    credentials: true // This is important for cookies
+}));
 // Basic middleware
 app.use(express.json());
-app.use('/api/admin', adminRoutes);
 app.use(cookieParser());
+app.use('/admin', adminRoutes);
+
 
 // Auth routes
 const authRoutes = require('./Routes/authRoute');

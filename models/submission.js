@@ -16,10 +16,6 @@ const submissionSchema = new mongoose.Schema({
     required: true,
     default: false
   },
-  submitted_answer: {
-    type: String,
-    required: false // Optional field to store what answer was submitted
-  },
   submitted_at: {
     type: Date,
     default: Date.now
