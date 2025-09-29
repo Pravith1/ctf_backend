@@ -12,13 +12,7 @@ const generateAccessToken = (user) => {
 	);
 };
 
-const generateRefreshToken = (user) => {
-	return jwt.sign(
-		{ id: user._id },
-		process.env.JWT_REFRESH_SECRET,
-		{ expiresIn: '7d' }
-	);
-};
+
 
 
 // Signup (all fields required, only user role allowed here)
@@ -43,17 +37,11 @@ exports.signup = async (req, res) => {
 		});
 		await user.save();
 		const accessToken = generateAccessToken(user);
-		const refreshToken = generateRefreshToken(user);
-		// Set cookies
+		// Set cookie
 		res.cookie('jwt', accessToken, {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === 'production',
-			maxAge: 1 * 24 * 60 * 60 * 1000 // 15 min
-		});
-		res.cookie('refreshToken', refreshToken, {
-			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
-			maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+			maxAge: 1 * 24 * 60 * 60 * 1000 // 1 day
 		});
 		res.status(201).json({ user: { email, team_name, year, field: user.field } });
 	} catch (err) {
@@ -78,17 +66,11 @@ exports.login = async (req, res) => {
 			return res.status(401).json({ message: 'Invalid credentials.' });
 		}
 		const accessToken = generateAccessToken(user);
-		const refreshToken = generateRefreshToken(user);
-		// Set cookies
+		// Set cookie
 		res.cookie('jwt', accessToken, {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === 'production',
-			maxAge: 1 * 24 * 60 * 60 * 1000 // 15 min
-		});
-		res.cookie('refreshToken', refreshToken, {
-			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
-			maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+			maxAge: 1 * 24 * 60 * 60 * 1000 // 1 day
 		});
 		res.status(200).json({ user: { email: user.email, team_name: user.team_name, year: user.year, field: user.field } });
 	} catch (err) {
@@ -100,31 +82,7 @@ exports.login = async (req, res) => {
 // Logout: clear cookies
 exports.logout = async (req, res) => {
 	res.clearCookie('jwt', { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production' });
-	res.clearCookie('refreshToken', { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production' });
 	res.status(200).json({ message: 'Logged out successfully.' });
 };
 
-// Refresh token endpoint
-exports.refresh = async (req, res) => {
-	const refreshToken = req.cookies.refreshToken;
-	if (!refreshToken) {
-		return res.status(401).json({ message: 'No refresh token provided.' });
-	}
-	try {
-		const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-		const user = await User.findById(payload.id);
-		if (!user) {
-			return res.status(401).json({ message: 'User not found.' });
-		}
-		const accessToken = generateAccessToken(user);
-		res.cookie('jwt', accessToken, {
-			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
-			sameSite: 'strict',
-			maxAge: 1 * 24 * 60 * 60 * 1000// 15 min
-		});
-		res.status(200).json({ message: 'Token refreshed.' });
-	} catch (err) {
-		res.status(403).json({ message: 'Invalid refresh token.' });
-	}
-};
+
