@@ -47,7 +47,7 @@ const handleSubmission = async (req, res) => {
       }
 
       // 2. Check if the submitted answer is correct
-      if (question.correct_answer !== submitted_answer) {
+      if (question.answer !== submitted_answer) {
         // Log the incorrect attempt
         const incorrectLog = new Submission({
           user_id: user._id,
@@ -58,20 +58,20 @@ const handleSubmission = async (req, res) => {
         await incorrectLog.save({ session });
         
         isCorrect = false;
-        totalScore = user.points;
+        totalScore = user.point;
         resultMessage = 'Incorrect answer. Try again!';
       } else {
         // --- UPDATES (if answer is correct and not previously solved) ---
-        pointsAwarded = question.points;
+        pointsAwarded = question.point;
         isCorrect = true;
 
         // Update the user's score and last submission timestamp
-        user.points += pointsAwarded;
+        user.point += pointsAwarded;
         user.lastSubmissionAt = new Date();
 
         // Dynamically reduce the question's points
-        const newPoints = Math.floor(question.points * 0.95);
-        question.points = newPoints;
+        const newPoints = Math.floor(question.point * 0.95);
+        question.point = newPoints;
         
         // Log the new, correct submission
         const correctLog = new Submission({
@@ -87,7 +87,7 @@ const handleSubmission = async (req, res) => {
         await question.save({ session });
         await correctLog.save({ session });
         
-        totalScore = user.points;
+        totalScore = user.point;
         resultMessage = `Correct! You earned ${pointsAwarded} points.`;
       }
     });

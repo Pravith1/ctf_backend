@@ -14,6 +14,7 @@ const { initializeSocket } = require('./controllers/leaderController');
 const adminRoutes = require('./Routes/adminRoutes');
 const authRoutes = require('./Routes/authRoute');
 const leaderboardRoutes = require('./Routes/leaderboardRoutes');
+const submissionRoutes = require('./Routes/submissionRoutes');
 
 // App setup
 const app = express();
@@ -40,6 +41,7 @@ app.use(cookieParser());
 app.use('/admin', adminRoutes);
 app.use('/auth', authRoutes);
 app.use('/leaderboard', leaderboardRoutes);
+app.use('/submission', submissionRoutes);
 
 // Initialize Socket.IO for leaderboard
 initializeSocket(io);
