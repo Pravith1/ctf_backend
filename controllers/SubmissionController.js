@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
-const Submission = require('../models/Submission');
-const User = require('../models/User'); // Changed from Team to User
+const Submission = require('../models/submission');
+const User = require('../models/user'); // Changed from Team to User
 const Question = require('../models/question');
+const { emitLeaderboardUpdate, emitNewSolve } = require('./leaderController');
 
 const handleSubmission = async (req, res) => {
   const { question_id, submitted_answer } = req.body;
@@ -90,6 +91,15 @@ const handleSubmission = async (req, res) => {
         resultMessage = `Correct! You earned ${pointsAwarded} points.`;
       }
     });
+    
+    // 🚀 REAL-TIME LEADERBOARD UPDATE!
+    if (isCorrect) {
+      // Emit real-time leaderboard update to all clients
+      setTimeout(() => {
+        emitLeaderboardUpdate(userId);
+        emitNewSolve(userId, question.title, pointsAwarded);
+      }, 100); // Small delay to ensure database updates are complete
+    }
     
     res.status(200).json({ 
       message: resultMessage,

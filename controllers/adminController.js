@@ -3,7 +3,7 @@ const ApiResponse = require('../utils/ApiResponse');
 
 const Category = require('../models/category');
 const Question = require('../models/question');
-const User = require('../models/User');
+const User = require('../models/user');
 
 const getCategories = asyncHandler(async (req, res) => {
   const categories = await Category.find().sort({ name: 1 });
