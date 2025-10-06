@@ -18,6 +18,10 @@ exports.signup = async (req, res) => {
 		if (!email || !team_name || !password || !year) {
 			return res.status(400).json({ message: 'All fields are required.' });
 		}
+		// Validate email domain
+		if (!email.endsWith('@psgtech.ac.in')) {
+			return res.status(400).json({ message: 'Please use your official PSG Tech email (@psgtech.ac.in)' });
+		}
 		// Check if user exists
 		const existing = await User.findOne({ email });
 		if (existing) {
@@ -49,11 +53,11 @@ exports.signup = async (req, res) => {
 // Login
 exports.login = async (req, res) => {
 	try {
-		const { email, password } = req.body;
-		if (!email || !password) {
-			return res.status(400).json({ message: 'Email and password required.' });
+		const { team_name, password } = req.body;
+		if (!team_name || !password) {
+			return res.status(400).json({ message: 'Team name and password required.' });
 		}
-		const user = await User.findOne({ email });
+		const user = await User.findOne({ team_name });
 		if (!user) {
 			return res.status(401).json({ message: 'Invalid credentials.' });
 		}
