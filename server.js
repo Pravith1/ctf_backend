@@ -30,7 +30,7 @@ const io = socketIo(server, {
 });
 app.get('/api/cleanup', async (req, res) => {
   // perform cleanup logic here
-  res.json({ message: 'Cleanup done' });
+  res.json({ message: '' });
 });
 
 // Middleware
