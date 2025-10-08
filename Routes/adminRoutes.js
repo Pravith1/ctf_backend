@@ -8,6 +8,8 @@ const {verifyToken} = require('../middleware/validate');
 
 router.get('/categories', verifyToken, isAdmin, adminController.getCategories);
 router.post('/categories', verifyToken, isAdmin, adminController.createCategory);
+router.patch('/categories/:id', verifyToken, isAdmin, adminController.updateCategory);
+router.delete('/categories/:id', verifyToken, isAdmin, adminController.deleteCategory);
 
 
 router.get('/questions', verifyToken, isAdmin, adminController.getQuestions);

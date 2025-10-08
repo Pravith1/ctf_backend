@@ -25,6 +25,55 @@ const createCategory = asyncHandler(async (req, res) => {
   res.status(201).json(new ApiResponse(201, category, "Category created"));
 });
 
+const updateCategory = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
+  if (!name || !name.trim()) {
+    return res.status(400).json(new ApiResponse(400, null, "Category name required"));
+  }
+
+  const normalizedName = name.trim();
+
+  const duplicate = await Category.findOne({
+    name: normalizedName,
+    _id: { $ne: id }
+  });
+
+  if (duplicate) {
+    return res.status(400).json(new ApiResponse(400, null, "Category already exists"));
+  }
+
+  const category = await Category.findByIdAndUpdate(
+    id,
+    { name: normalizedName },
+    { new: true }
+  );
+
+  if (!category) {
+    return res.status(404).json(new ApiResponse(404, null, "Category not found"));
+  }
+
+  res.status(200).json(new ApiResponse(200, category, "Category updated"));
+});
+
+const deleteCategory = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const hasQuestions = await Question.exists({ categoryId: id });
+  if (hasQuestions) {
+    return res.status(400).json(new ApiResponse(400, null, "Cannot delete category with existing questions"));
+  }
+
+  const category = await Category.findByIdAndDelete(id);
+
+  if (!category) {
+    return res.status(404).json(new ApiResponse(404, null, "Category not found"));
+  }
+
+  res.status(200).json(new ApiResponse(200, category, "Category deleted"));
+});
+
 const getQuestions = asyncHandler(async (req, res) => {
   const questions = await Question.find()
     .populate('categoryId', 'name')
@@ -98,6 +147,8 @@ const deleteQuestion = asyncHandler(async (req, res) => {
 module.exports = {
   getCategories,
   createCategory,
+  updateCategory,
+  deleteCategory,
 
   getQuestions,
   createQuestion,
