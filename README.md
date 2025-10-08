@@ -61,6 +61,22 @@ npm start
 
 The server will start on `http://localhost:3000` (or the port specified in your environment variables).
 
+## 📚 API Documentation
+
+**Swagger UI is available at:** `http://localhost:5000/api-docs`
+
+The CTF Backend includes comprehensive API documentation using Swagger/OpenAPI 3.0. You can:
+- View all available endpoints
+- Test API calls directly from the browser
+- See request/response schemas
+- Understand authentication requirements
+
+### Quick Access
+- **Interactive Docs**: http://localhost:5000/api-docs
+- **JSON Spec**: http://localhost:5000/api-docs.json
+
+For detailed setup instructions, see [SWAGGER_SETUP.md](./SWAGGER_SETUP.md)
+
 
 ## �🛠️ Development Tasks & Ownership
 

@@ -9,6 +9,7 @@ require('dotenv').config();
 // Internal modules
 const connectDB = require('./utils/db');
 const { initializeSocket } = require('./controllers/leaderController');
+const setupSwagger = require('./swagger');
 
 // Route imports
 const adminRoutes = require('./Routes/adminRoutes');
@@ -40,6 +41,9 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
+
+// Setup Swagger Documentation
+setupSwagger(app);
 
 // Routes
 app.use('/admin', adminRoutes);
