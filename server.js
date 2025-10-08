@@ -28,6 +28,10 @@ const io = socketIo(server, {
     credentials: true
   }
 });
+app.get('/api/cleanup', async (req, res) => {
+  // perform cleanup logic here
+  res.json({ message: 'Cleanup done' });
+});
 
 // Middleware
 app.use(cors({
