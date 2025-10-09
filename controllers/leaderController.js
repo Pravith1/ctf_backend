@@ -101,7 +101,7 @@ const emitLeaderboardUpdate = async (updatedUserId = null) => {
 
   try {
     // Fetch and emit BEGINNER leaderboard
-    const beginnerLeaderboard = await User.find({ field: 'user', difficulty: 'beginner' })
+    const beginnerLeaderboard = await User.find({ field: 'user', difficulty: user.difficulty })
       .select('team_name point solved_no difficulty createdAt')
       .sort({ point: -1, solved_no: -1, createdAt: 1 });
 
@@ -159,7 +159,7 @@ const emitLeaderboardUpdate = async (updatedUserId = null) => {
       }
     }
 
-    console.log(`📊 Leaderboard updates emitted for both difficulty levels`);
+    console.log(`Leaderboard updates emitted for both difficulty levels`);
   } catch (error) {
     console.error('Error emitting leaderboard update:', error);
   }

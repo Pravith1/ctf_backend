@@ -364,6 +364,7 @@ const handleSubmission = async (req, res) => {
     let isCorrect = false;
     let pointsAwarded = 0;
     let totalScore = 0;
+    let questionTitle = ""; // Store question title for later use in setTimeout
 
     await session.withTransaction(async () => {
       // Get user information from JWT token
@@ -377,6 +378,9 @@ const handleSubmission = async (req, res) => {
       if (!question) {
         throw new Error("Question not found.");
       }
+
+      // Store question title for use outside transaction
+      questionTitle = question.title;
 
       // --- VALIDATION CHECKS ---
 
@@ -442,7 +446,7 @@ const handleSubmission = async (req, res) => {
       // Emit real-time leaderboard update to all clients
       setTimeout(() => {
         emitLeaderboardUpdate(userId);
-        emitNewSolve(userId, question.title, pointsAwarded);
+        emitNewSolve(userId, questionTitle, pointsAwarded);
       }, 100); // Small delay to ensure database updates are complete
     }
 
