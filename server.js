@@ -29,6 +29,11 @@ const allowedOrigins = [
   process.env.FRONTEND_URL, // Add your deployed frontend URL in .env
 ].filter(Boolean); // Remove undefined values
 
+app.get('/api/cleanup', async (req, res) => {
+  // perform cleanup logic here
+  res.json({ message: '' });
+});
+
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl requests)
@@ -58,10 +63,6 @@ const io = socketIo(server, {
     methods: ['GET', 'POST'],
     credentials: true
   }
-});
-app.get('/api/cleanup', async (req, res) => {
-  // perform cleanup logic here
-  res.json({ message: '' });
 });
 
 // Middleware
