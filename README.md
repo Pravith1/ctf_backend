@@ -1,6 +1,59 @@
 # 🚩 CTF Backend
 
-A Capture The Flag (CTF) competition backend built with Express.js and Node.js. This application provides a comprehensive platform for hosting cybersecurity challenges, managing user authentication, tracking scores, and real-time updates through WebSocket connections.
+A Capture The Flag (CTF) competition backend built with EFor detailed setup instructions, see [SWAGGER_SETUP.md](./SWAGGER_SETUP.md)
+
+## 🌐 CORS Configuration for Deployment
+
+### Problem: Can't access Render backend from localhost frontend
+
+When you deploy your backend to Render and try to access it from your localhost frontend, you might encounter CORS errors. This happens because the backend is configured to only accept requests from specific origins.
+
+### Solution: Configure Environment Variables
+
+1. **On Render (Production Backend)**:
+   - Go to your Render dashboard → Your service → Environment
+   - Add environment variable: `FRONTEND_URL=http://localhost:5173`
+   - If your frontend is also deployed, use: `FRONTEND_URL=https://your-frontend.vercel.app`
+   - Redeploy your backend service
+
+2. **For local development (.env file)**:
+   ```env
+   FRONTEND_URL=http://localhost:5173
+   ```
+
+3. **For multiple frontend URLs** (local + deployed):
+   - The backend is configured to accept multiple origins
+   - It automatically allows:
+     - `http://localhost:3000`
+     - `http://localhost:5173`
+     - `http://localhost:5174`
+     - Whatever URL you set in `FRONTEND_URL` environment variable
+
+### Testing CORS
+
+```bash
+# From your frontend directory, test the API
+curl -X GET https://your-app.onrender.com/leaderboard \
+  -H "Origin: http://localhost:5173" \
+  -v
+```
+
+### Common Issues
+
+1. **Cookies not working across domains**:
+   - When frontend is on `localhost` and backend is on `render.com`, cookies won't work due to browser security
+   - Solution: Deploy both frontend and backend, or use localhost for both during development
+
+2. **CORS policy error in browser console**:
+   - Check that `FRONTEND_URL` is set correctly in Render environment variables
+   - Make sure you've redeployed after adding the environment variable
+
+3. **WebSocket connection failed**:
+   - Ensure your frontend connects to the correct WebSocket URL
+   - Example: `io('https://your-app.onrender.com', { withCredentials: true })`
+
+
+## 🛠️ Development Tasks & Ownershipss.js and Node.js. This application provides a comprehensive platform for hosting cybersecurity challenges, managing user authentication, tracking scores, and real-time updates through WebSocket connections.
 
 ## 📋 Project Overview
 
