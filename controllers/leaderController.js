@@ -12,7 +12,7 @@ const initializeSocket = (socketIo) => {
 // Get current leaderboard (filtered by difficulty)
 const getLeaderboard = async (req, res) => {
   try {
-    const { difficulty } = req.query; // Get difficulty from query params
+    const { difficulty } = req.user; // Get difficulty from query params
 
     // Validate difficulty
     if (!difficulty || !['beginner', 'intermediate'].includes(difficulty)) {
