@@ -51,7 +51,7 @@ exports.signup = async (req, res) => {
 		res.cookie('jwt', accessToken, {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === 'production',
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+			sameSite: 'none',
   maxAge: 1 * 24 * 60 * 60 * 1000
 		});
 		res.status(201).json({ message: 'Signup successful!', user: { email, team_name, year, difficulty, field: user.field } });
@@ -90,7 +90,7 @@ exports.login = async (req, res) => {
 		res.clearCookie('jwt', { 
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  sameSite: 'none',
   maxAge: 1 * 24 * 60 * 60 * 1000 
 });
 		res.status(200).json({ message: 'Login successful!', user: { email: user.email, team_name: user.team_name, year: user.year, difficulty: user.difficulty, field: user.field } });
@@ -103,7 +103,7 @@ exports.login = async (req, res) => {
 // Logout: clear cookies
 exports.logout = async (req, res) => {
 	res.clearCookie('jwt', { httpOnly: true,secure: process.env.NODE_ENV === 'production',
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  sameSite:'none',
   maxAge: 1 * 24 * 60 * 60 * 1000 });
 	res.status(200).json({ message: 'Logged out successfully.' });
 };
