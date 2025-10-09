@@ -50,7 +50,9 @@ exports.signup = async (req, res) => {
 		// Set cookie
 		res.cookie('jwt', accessToken, {
 			httpOnly: true,
-			maxAge: 1 * 24 * 60 * 60 * 1000 // 1 day
+			secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  maxAge: 1 * 24 * 60 * 60 * 1000
 		});
 		res.status(201).json({ message: 'Signup successful!', user: { email, team_name, year, difficulty, field: user.field } });
 	} catch (err) {
@@ -98,7 +100,9 @@ exports.login = async (req, res) => {
 
 // Logout: clear cookies
 exports.logout = async (req, res) => {
-	res.clearCookie('jwt', { httpOnly: true });
+	res.clearCookie('jwt', { httpOnly: true,secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  maxAge: 1 * 24 * 60 * 60 * 1000 });
 	res.status(200).json({ message: 'Logged out successfully.' });
 };
 
