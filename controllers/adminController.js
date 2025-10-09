@@ -144,6 +144,10 @@ const deleteQuestion = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, deleted, "Question deleted"));
 });
 
+const isAdmin = (req, res) => {
+  res.status(200).json({ flag: true });
+}
+
 module.exports = {
   getCategories,
   createCategory,
@@ -154,4 +158,5 @@ module.exports = {
   createQuestion,
   updateQuestion,
   deleteQuestion,
+  isAdmin,
 };

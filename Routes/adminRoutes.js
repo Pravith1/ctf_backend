@@ -88,6 +88,55 @@ router.delete('/categories/:id', verifyToken, isAdmin, adminController.deleteCat
 
 /**
  * @swagger
+ * /admin/isAdmin:
+ *   get:
+ *     summary: Check if current user is an admin
+ *     tags: [Admin]
+ *     security:
+ *       - cookieAuth: []
+ *     description: Verifies if the authenticated user has admin privileges
+ *     responses:
+ *       200:
+ *         description: User is an admin
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 flag:
+ *                   type: boolean
+ *                   example: true
+ *       401:
+ *         description: Unauthorized - Missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Token not verified yet.
+ *                 flag:
+ *                   type: boolean
+ *                   example: false
+ *       403:
+ *         description: Forbidden - User is not an admin
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. Admins only.
+ *                 flag:
+ *                   type: boolean
+ *                   example: false
+ */
+router.get('/isAdmin', verifyToken, isAdmin, adminController.isAdmin);
+
+/**
+ * @swagger
  * /admin/questions:
  *   get:
  *     summary: Get all questions (Admin only)

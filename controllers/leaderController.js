@@ -112,7 +112,7 @@ const emitLeaderboardUpdate = async (updatedUserId = null) => {
       }
     }
 
-    console.log(`📊 Leaderboard update emitted to all clients`);
+    console.log(`Leaderboard update emitted to all clients`);
   } catch (error) {
     console.error('Error emitting leaderboard update:', error);
   }
