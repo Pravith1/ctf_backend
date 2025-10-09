@@ -26,10 +26,15 @@ exports.signup = async (req, res) => {
 		if (!['beginner', 'intermediate'].includes(difficulty)) {
 			return res.status(400).json({ message: 'Difficulty must be either "beginner" or "intermediate".' });
 		}
-		// Check if user exists
-		const existing = await User.findOne({ email });
-		if (existing) {
+		// Check if email already exists
+		const existingEmail = await User.findOne({ email });
+		if (existingEmail) {
 			return res.status(409).json({ message: 'Email already registered.' });
+		}
+		// Check if team name already exists
+		const existingTeamName = await User.findOne({ team_name });
+		if (existingTeamName) {
+			return res.status(409).json({ message: 'Team name already taken. Please choose a different team name.' });
 		}
 		const hash = await bcrypt.hash(password, 10);
 		const user = new User({
@@ -47,9 +52,18 @@ exports.signup = async (req, res) => {
 			httpOnly: true,
 			maxAge: 1 * 24 * 60 * 60 * 1000 // 1 day
 		});
-		res.status(201).json({ user: { email, team_name, year, difficulty, field: user.field } });
+		res.status(201).json({ message: 'Signup successful!', user: { email, team_name, year, difficulty, field: user.field } });
 	} catch (err) {
-		res.status(500).json({ message: 'Signup failed', error: err.message });
+		// Handle MongoDB duplicate key error
+		if (err.code === 11000) {
+			const field = Object.keys(err.keyPattern)[0];
+			if (field === 'email') {
+				return res.status(409).json({ message: 'Email already registered.' });
+			} else if (field === 'team_name') {
+				return res.status(409).json({ message: 'Team name already taken. Please choose a different team name.' });
+			}
+		}
+		return res.status(500).json({ message: err.message || 'Signup failed. Please try again.' });
 	}
 };
 
@@ -59,15 +73,15 @@ exports.login = async (req, res) => {
 	try {
 		const { team_name, password } = req.body;
 		if (!team_name || !password) {
-			return res.status(400).json({ message: 'Team name and password required.' });
+			return res.status(400).json({ message: 'Team name and password are required.' });
 		}
 		const user = await User.findOne({ team_name });
 		if (!user) {
-			return res.status(401).json({ message: 'Invalid credentials.' });
+			return res.status(401).json({ message: 'Team name not found. Please check your team name or sign up.' });
 		}
 		const match = await bcrypt.compare(password, user.password);
 		if (!match) {
-			return res.status(401).json({ message: 'Invalid credentials.' });
+			return res.status(401).json({ message: 'Incorrect password. Please try again.' });
 		}
 		const accessToken = generateAccessToken(user);
 		// Set cookie
@@ -75,9 +89,9 @@ exports.login = async (req, res) => {
 			httpOnly: true,
 			maxAge: 1 * 24 * 60 * 60 * 1000 // 1 day
 		});
-		res.status(200).json({ user: { email: user.email, team_name: user.team_name, year: user.year, field: user.field } });
+		res.status(200).json({ message: 'Login successful!', user: { email: user.email, team_name: user.team_name, year: user.year, difficulty: user.difficulty, field: user.field } });
 	} catch (err) {
-		res.status(500).json({ message: 'Login failed', error: err.message });
+		return res.status(500).json({ message: err.message || 'Login failed. Please try again.' });
 	}
 };
 

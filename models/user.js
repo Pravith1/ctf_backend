@@ -17,7 +17,8 @@ const userSchema = new mongoose.Schema({
   team_name: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    unique: true    // no duplicate team names allowed
   },
   password: {
     type: String,
