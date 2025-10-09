@@ -87,7 +87,7 @@ exports.login = async (req, res) => {
 		}
 		const accessToken = generateAccessToken(user);
 		// Set cookie
-		res.clearCookie('jwt', { 
+		res.Cookie('jwt', { 
   httpOnly: true,
   secure: true,
   sameSite: 'none',
