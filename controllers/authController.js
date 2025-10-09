@@ -87,10 +87,12 @@ exports.login = async (req, res) => {
 		}
 		const accessToken = generateAccessToken(user);
 		// Set cookie
-		res.cookie('jwt', accessToken, {
-			httpOnly: true,
-			maxAge: 1 * 24 * 60 * 60 * 1000 // 1 day
-		});
+		res.clearCookie('jwt', { 
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  maxAge: 1 * 24 * 60 * 60 * 1000 
+});
 		res.status(200).json({ message: 'Login successful!', user: { email: user.email, team_name: user.team_name, year: user.year, difficulty: user.difficulty, field: user.field } });
 	} catch (err) {
 		return res.status(500).json({ message: err.message || 'Login failed. Please try again.' });
