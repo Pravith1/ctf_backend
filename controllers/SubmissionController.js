@@ -5,6 +5,46 @@ const Question = require("../models/question");
 const categoryModel = require("../models/category");
 const { emitLeaderboardUpdate, emitNewSolve } = require("./leaderController");
 
+
+const getQuestion = async (req, res) => {
+  const { question_id } = req.body;
+  
+  try {
+    // Validation
+    if (!question_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Question ID is required",
+      });
+    }
+
+    // Find question but exclude the answer field for security
+    const question = await Question.findById(question_id)
+      .populate('categoryId', 'name')
+      .select('title description point year solved_count createdAt difficulty categoryId') // Exclude 'answer' field
+      .lean();
+
+    if (!question) {
+      return res.status(404).json({
+        success: false,
+        message: "Question not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: question,
+      message: "Question fetched successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch Question",
+      error: error.message,
+    });
+  }
+}
+
 const fetchCategories = async (req, res) => {
   try {
     const categories = await categoryModel.find({});
@@ -25,23 +65,17 @@ const fetchCategories = async (req, res) => {
 
 const fetchQuestions = async (req, res) => {
   try {
+    const { difficulty } = req.user; // Get user's difficulty from JWT token
     const { categoryId } = req.body;
-    const userId = req.user.id;
+    
     if (!categoryId) {
       return res.status(400).json({
         success: false,
         message: "Category ID is required",
       });
     }
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
 
-    const userYear = user.year;
+    // Validate if category exists
     const categoryExists = await categoryModel.findById(categoryId);
     if (!categoryExists) {
       return res.status(404).json({
@@ -50,32 +84,24 @@ const fetchQuestions = async (req, res) => {
       });
     }
 
-    let questionsQuery;
-    if (userYear === 1 || userYear === 2) {
-      questionsQuery = {
-        categoryId: categoryId,
-        $or: [
-          { year: 1 },
-          { year: 2 }
-        ]
-      };
-    } else {
-      questionsQuery = {
-        categoryId: categoryId,
-        year: userYear
-      };
-    }
+    // Filter questions based only on difficulty and category
+    const questionsQuery = {
+      categoryId: categoryId,
+      difficulty: difficulty // Filter by user's difficulty level only
+    };
+
     const questions = await Question.find(questionsQuery)
       .populate('categoryId', 'name')
-      .select('title description point year solved_count createdAt answer')
-      .sort({ year: 1, point: -1 });
+      .select('title description point year solved_count createdAt difficulty') // Removed 'answer' for security
+      .sort({ point: -1, createdAt: -1 }) // Sort by points descending, then by newest
+      .lean(); // Use lean() for better performance
 
     res.status(200).json({
       success: true,
       data: {
         questions: questions,
         category: categoryExists.name,
-        userYear: userYear,
+        userDifficulty: difficulty,
         totalQuestions: questions.length
       },
       message: "Questions fetched successfully",
@@ -88,6 +114,238 @@ const fetchQuestions = async (req, res) => {
     });
   }
 }
+
+const fetchSolvedQuestions = async (req, res) => {
+  try {
+    const userId = req.user.id; // Get user ID from JWT token
+    const { difficulty } = req.user; // Get user's difficulty from JWT token
+    const { categoryId } = req.body;
+
+    // Validation
+    if (!categoryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Category ID is required",
+      });
+    }
+
+    // Validate if category exists
+    const categoryExists = await categoryModel.findById(categoryId);
+    if (!categoryExists) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    // Find all correctly solved submissions by this user in the specific category
+    const solvedSubmissions = await Submission.find({
+      user_id: userId,
+      iscorrect: true
+    })
+    .populate({
+      path: 'question_id',
+      match: { 
+        categoryId: categoryId,
+        difficulty: difficulty 
+      },
+      populate: {
+        path: 'categoryId',
+        select: 'name'
+      }
+    })
+    .sort({ submitted_at: -1 }) // Most recent first
+    .lean();
+
+    // Filter out submissions where question_id is null (didn't match the category/difficulty filter)
+    const validSolvedSubmissions = solvedSubmissions.filter(submission => submission.question_id);
+
+    // Extract question details with category and difficulty info
+    const solvedQuestions = validSolvedSubmissions.map(submission => ({
+      _id: submission.question_id._id,
+      title: submission.question_id.title,
+      description: submission.question_id.description,
+      point: submission.question_id.point,
+      year: submission.question_id.year,
+      difficulty: submission.question_id.difficulty,
+      solved_count: submission.question_id.solved_count,
+      categoryId: submission.question_id.categoryId,
+      solved_at: submission.submitted_at,
+      createdAt: submission.question_id.createdAt
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: {
+        questions: solvedQuestions,
+        category: categoryExists.name,
+        userDifficulty: difficulty,
+        totalSolved: solvedQuestions.length
+      },
+      message: "Solved questions fetched successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch solved questions",
+      error: error.message,
+    });
+  }
+};
+
+const isSolvedQuestion = async (req, res) => {
+  const { question_id } = req.body;
+  const userId = req.user.id; // Get user ID from JWT token
+  
+  try {
+    // Validation
+    if (!question_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Question ID is required",
+      });
+    }
+
+    // Check if the question exists
+    const questionExists = await Question.findById(question_id);
+    if (!questionExists) {
+      return res.status(404).json({
+        success: false,
+        message: "Question not found",
+      });
+    }
+
+    // Check if user has a correct submission for this question
+    const solvedSubmission = await Submission.findOne({
+      user_id: userId,
+      question_id: question_id,
+      iscorrect: true
+    });
+
+    const isSolved = solvedSubmission ? true : false;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        isSolved: isSolved,
+        questionId: question_id
+      },
+      message: `Question is ${isSolved ? 'solved' : 'not solved'}`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to check question status",
+      error: error.message,
+    });
+  }
+};
+const fetchIncorrectSubmissions = async (req, res) => {
+  try {
+    const userId = req.user.id; // Get user ID from JWT token
+    const { difficulty } = req.user; // Get user's difficulty from JWT token
+    const { categoryId } = req.body;
+
+    // Validation
+    if (!categoryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Category ID is required",
+      });
+    }
+
+    // Validate if category exists
+    const categoryExists = await categoryModel.findById(categoryId);
+    if (!categoryExists) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    // Get all questions in this category and difficulty
+    const allQuestions = await Question.find({
+      categoryId: categoryId,
+      difficulty: difficulty
+    })
+    .populate('categoryId', 'name')
+    .select('title description point year solved_count createdAt difficulty')
+    .sort({ point: -1, createdAt: -1 })
+    .lean();
+
+    // Get all correctly solved questions by this user in this category
+    const solvedQuestions = await Submission.find({
+      user_id: userId,
+      iscorrect: true
+    })
+    .populate({
+      path: 'question_id',
+      match: {
+        categoryId: categoryId,
+        difficulty: difficulty
+      }
+    })
+    .lean();
+
+    // Create set of solved question IDs
+    const solvedQuestionIds = new Set(
+      solvedQuestions
+        .filter(submission => submission.question_id) // Filter out null populated questions
+        .map(submission => submission.question_id._id.toString())
+    );
+
+    // Get incorrectly attempted questions by this user in this category
+    const incorrectSubmissions = await Submission.find({
+      user_id: userId,
+      iscorrect: false
+    })
+    .populate({
+      path: 'question_id',
+      match: { 
+        categoryId: categoryId,
+        difficulty: difficulty 
+      }
+    })
+    .lean();
+
+    // Create set of incorrectly attempted question IDs
+    const incorrectQuestionIds = new Set(
+      incorrectSubmissions
+        .filter(submission => submission.question_id) // Filter out null populated questions
+        .map(submission => submission.question_id._id.toString())
+    );
+
+    // Get unsolved questions (never attempted + incorrectly attempted)
+    const unsolvedQuestions = allQuestions
+      .filter(question => !solvedQuestionIds.has(question._id.toString())) // Exclude solved questions
+      .map(question => {
+        const questionId = question._id.toString();
+        const wasAttempted = incorrectQuestionIds.has(questionId);
+        
+        return {
+          ...question,
+          status: wasAttempted ? 'attempted_incorrect' : 'never_attempted'
+        };
+      });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        unsolvedQuestions: unsolvedQuestions, // Combined list of incorrectly attempted + never attempted questions
+        category: categoryExists.name,
+        userDifficulty: difficulty,
+        totalUnsolved: unsolvedQuestions.length
+      },
+      message: "Unsolved questions (incorrect + never attempted) fetched successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch unsolved questions",
+      error: error.message,
+    });
+  }
+};
 
 const handleSubmission = async (req, res) => {
   const { question_id, submitted_answer } = req.body;
@@ -205,4 +463,12 @@ const handleSubmission = async (req, res) => {
   }
 };
 
-module.exports = { handleSubmission,fetchQuestions,fetchCategories};
+module.exports = { 
+  handleSubmission,
+  fetchQuestions,
+  fetchCategories,
+  getQuestion,
+  fetchSolvedQuestions,
+  fetchIncorrectSubmissions,
+  isSolvedQuestion
+};
