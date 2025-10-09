@@ -68,6 +68,7 @@ const io = socketIo(server, {
 // Middleware
 
 app.use(express.json());
+app.set('trust proxy', 1);
 app.use(cookieParser());
 
 // Setup Swagger Documentation
