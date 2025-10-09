@@ -82,15 +82,25 @@ const getQuestions = asyncHandler(async (req, res) => {
 });
 
 const createQuestion = asyncHandler(async (req, res) => {
-  const { category, title, description, answer, point, year } = req.body;
+  const { category, title, description, answer, point, year, difficulty } = req.body;
 
-  if (!category || !title || !description || !answer || !point || !year) {
+  if (!category || !title || !description || !answer || !point || !year || !difficulty) {
     return res.status(400).json({
       statusCode: 400,
-      message: "All fields are required",
+      message: "All fields are required (category, title, description, answer, point, year, difficulty)",
       success: false
     });
   }
+
+  // Validate difficulty
+  if (!['beginner', 'intermediate'].includes(difficulty)) {
+    return res.status(400).json({
+      statusCode: 400,
+      message: "Difficulty must be either 'beginner' or 'intermediate'",
+      success: false
+    });
+  }
+
   let cat = await Category.findOne({ name: category });
   if (!cat) cat = await Category.create({ name: category });
 
@@ -111,9 +121,18 @@ const createQuestion = asyncHandler(async (req, res) => {
 
 const updateQuestion = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { category } = req.body;
+  const { category, difficulty } = req.body;
 
   let updateData = { ...req.body };
+
+  // Validate difficulty if provided
+  if (difficulty && !['beginner', 'intermediate'].includes(difficulty)) {
+    return res.status(400).json({
+      statusCode: 400,
+      message: "Difficulty must be either 'beginner' or 'intermediate'",
+      success: false
+    });
+  }
 
   if (category) {
     let cat = await Category.findOne({ name: category });
@@ -153,7 +172,6 @@ module.exports = {
   createCategory,
   updateCategory,
   deleteCategory,
-
   getQuestions,
   createQuestion,
   updateQuestion,

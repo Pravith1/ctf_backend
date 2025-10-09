@@ -37,9 +37,10 @@ const userSchema = new mongoose.Schema({
     default: 0,
     min: 0
   },
-  difficulty:{
-    type:String,
-    required:true
+  difficulty: {
+    type: String,
+    enum: ['beginner', 'intermediate'],
+    required: true
   }
 }, {
   timestamps: true

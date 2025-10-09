@@ -19,6 +19,7 @@ const authController = require('../controllers/authController');
  *               - team_name
  *               - password
  *               - year
+ *               - difficulty
  *             properties:
  *               email:
  *                 type: string
@@ -38,6 +39,11 @@ const authController = require('../controllers/authController');
  *                 type: number
  *                 description: Academic year (1-4)
  *                 example: 3
+ *               difficulty:
+ *                 type: string
+ *                 enum: [beginner, intermediate]
+ *                 description: Difficulty level for challenges
+ *                 example: beginner
  *     responses:
  *       201:
  *         description: User registered successfully
@@ -55,10 +61,13 @@ const authController = require('../controllers/authController');
  *                       type: string
  *                     year:
  *                       type: number
+ *                     difficulty:
+ *                       type: string
+ *                       enum: [beginner, intermediate]
  *                     field:
  *                       type: string
  *       400:
- *         description: Invalid input or email not @psgtech.ac.in
+ *         description: Invalid input, email not @psgtech.ac.in, or invalid difficulty level
  *       409:
  *         description: Email already registered
  *       500:

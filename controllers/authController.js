@@ -14,13 +14,17 @@ const generateAccessToken = (user) => {
 // Signup (all fields required, only user role allowed here)
 exports.signup = async (req, res) => {
 	try {
-		const { email, team_name, password, year } = req.body;
-		if (!email || !team_name || !password || !year) {
+		const { email, team_name, password, year, difficulty } = req.body;
+		if (!email || !team_name || !password || !year || !difficulty) {
 			return res.status(400).json({ message: 'All fields are required.' });
 		}
 		// Validate email domain
 		if (!email.endsWith('@psgtech.ac.in')) {
 			return res.status(400).json({ message: 'Please use your official PSG Tech email (@psgtech.ac.in)' });
+		}
+		// Validate difficulty level
+		if (!['beginner', 'intermediate'].includes(difficulty)) {
+			return res.status(400).json({ message: 'Difficulty must be either "beginner" or "intermediate".' });
 		}
 		// Check if user exists
 		const existing = await User.findOne({ email });
@@ -33,6 +37,7 @@ exports.signup = async (req, res) => {
 			team_name,
 			password: hash,
 			year,
+			difficulty,
 			field: 'user'
 		});
 		await user.save();
@@ -43,7 +48,7 @@ exports.signup = async (req, res) => {
 			secure: process.env.NODE_ENV === 'production',
 			maxAge: 1 * 24 * 60 * 60 * 1000 // 1 day
 		});
-		res.status(201).json({ user: { email, team_name, year, field: user.field } });
+		res.status(201).json({ user: { email, team_name, year, difficulty, field: user.field } });
 	} catch (err) {
 		res.status(500).json({ message: 'Signup failed', error: err.message });
 	}

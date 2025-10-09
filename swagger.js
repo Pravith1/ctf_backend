@@ -53,6 +53,11 @@ const options = {
               type: 'number',
               description: 'Academic year (1-4)'
             },
+            difficulty: {
+              type: 'string',
+              enum: ['beginner', 'intermediate'],
+              description: 'Difficulty level for challenges'
+            },
             point: {
               type: 'number',
               description: 'Total points earned'
@@ -111,6 +116,11 @@ const options = {
             year: {
               type: 'number',
               description: 'Target year level'
+            },
+            difficulty: {
+              type: 'string',
+              enum: ['beginner', 'intermediate'],
+              description: 'Difficulty level of the question'
             },
             solved_count: {
               type: 'number',

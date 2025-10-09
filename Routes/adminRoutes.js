@@ -189,6 +189,7 @@ router.get('/questions', verifyToken, isAdmin, adminController.getQuestions);
  *               - answer
  *               - point
  *               - year
+ *               - difficulty
  *             properties:
  *               category:
  *                 type: string
@@ -208,6 +209,11 @@ router.get('/questions', verifyToken, isAdmin, adminController.getQuestions);
  *               year:
  *                 type: number
  *                 example: 3
+ *               difficulty:
+ *                 type: string
+ *                 enum: [beginner, intermediate]
+ *                 description: Difficulty level for this question
+ *                 example: beginner
  *     responses:
  *       201:
  *         description: Question created successfully
@@ -225,7 +231,7 @@ router.get('/questions', verifyToken, isAdmin, adminController.getQuestions);
  *                   type: string
  *                   example: Question created
  *       400:
- *         description: Missing required fields or question already exists
+ *         description: Missing required fields, invalid difficulty, or question already exists
  *       401:
  *         description: Unauthorized
  *       403:
@@ -267,6 +273,10 @@ router.post('/questions', verifyToken, isAdmin, adminController.createQuestion);
  *                 type: number
  *               year:
  *                 type: number
+ *               difficulty:
+ *                 type: string
+ *                 enum: [beginner, intermediate]
+ *                 description: Difficulty level for this question
  *     responses:
  *       200:
  *         description: Question updated successfully
