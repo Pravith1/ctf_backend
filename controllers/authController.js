@@ -54,7 +54,11 @@ exports.signup = async (req, res) => {
 			sameSite: 'none',
   maxAge: 1 * 24 * 60 * 60 * 1000
 		});
-		res.status(201).json({ message: 'Signup successful!', user: { email, team_name, year, difficulty, field: user.field } });
+		res.status(201).json({ 
+			message: 'Signup successful!', 
+			token: accessToken,
+			user: { email, team_name, year, difficulty, field: user.field } 
+		});
 	} catch (err) {
 		// Handle MongoDB duplicate key error
 		if (err.code === 11000) {
@@ -87,13 +91,17 @@ exports.login = async (req, res) => {
 		}
 		const accessToken = generateAccessToken(user);
 		// Set cookie
-		res.cookie('jwt', { 
+		res.cookie('jwt', accessToken, { 
   httpOnly: true,
   secure: true,
   sameSite: 'none',
   maxAge: 1 * 24 * 60 * 60 * 1000 
 });
-		res.status(200).json({ message: 'Login successful!', user: { email: user.email, team_name: user.team_name, year: user.year, difficulty: user.difficulty, field: user.field } });
+		res.status(200).json({ 
+			message: 'Login successful!', 
+			token: accessToken,
+			user: { email: user.email, team_name: user.team_name, year: user.year, difficulty: user.difficulty, field: user.field } 
+		});
 	} catch (err) {
 		return res.status(500).json({ message: err.message || 'Login failed. Please try again.' });
 	}
@@ -105,7 +113,7 @@ exports.logout = async (req, res) => {
 	res.clearCookie('jwt', { httpOnly: true,secure: true,
   sameSite:'none',
   maxAge: 1 * 24 * 60 * 60 * 1000 });
-	res.status(200).json({ message: 'Logged out successfully.' });
+	res.status(200).json({ message: 'Logged out successfully. Please remove the token from your storage.' });
 };
 
 
