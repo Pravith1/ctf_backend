@@ -52,21 +52,15 @@ app.use(cors({
 }));
 // Socket.IO setup with CORS
 const io = socketIo(server, {
-  path:'/socket.io',
+  path: '/socket.io',
   cors: {
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      
-      if (allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+    origin: allowedOrigins, // use array directly — more reliable than a function
     methods: ['GET', 'POST'],
     credentials: true
-  }
+  },
+  transports: ['websocket', 'polling'], // allow polling fallback
+  pingInterval: 25000,
+  pingTimeout: 60000 // increase to avoid false "ping timeout" disconnects on hosted envs
 });
 
 // Middleware
