@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getLeaderboard } = require('../controllers/leaderController');
+const {verifyToken} = require('../middleware/validate');
 
 /**
  * @swagger
@@ -50,6 +51,6 @@ const { getLeaderboard } = require('../controllers/leaderController');
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/', getLeaderboard);
+router.get('/', verifyToken, getLeaderboard);
 
 module.exports = router;

@@ -52,6 +52,7 @@ app.use(cors({
 }));
 // Socket.IO setup with CORS
 const io = socketIo(server, {
+  path:'/socket.io',
   cors: {
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps or curl requests)
@@ -94,6 +95,7 @@ io.on('connection', (socket) => {
   
   socket.on('disconnect', () => {
     console.log(`🔌 User disconnected: ${socket.id}`);
+    
   });
 });
 
