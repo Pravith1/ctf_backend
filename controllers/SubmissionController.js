@@ -47,7 +47,8 @@ const getQuestion = async (req, res) => {
 
 const fetchCategories = async (req, res) => {
   try {
-    const categories = await categoryModel.find({});
+    const userDifficulty = req.user.difficulty;
+    const categories = await categoryModel.find({ difficulty: userDifficulty });
     res.status(200).json({
       success: true,
       data: categories,
@@ -81,6 +82,14 @@ const fetchQuestions = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Category not found",
+      });
+    }
+    
+    // Validate user has access to this category's difficulty level
+    if (categoryExists.difficulty !== difficulty) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied: This category is not available for your difficulty level",
       });
     }
 
@@ -135,6 +144,14 @@ const fetchSolvedQuestions = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Category not found",
+      });
+    }
+    
+    // Validate user has access to this category's difficulty level
+    if (categoryExists.difficulty !== difficulty) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied: This category is not available for your difficulty level",
       });
     }
 
@@ -260,6 +277,14 @@ const fetchIncorrectSubmissions = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Category not found",
+      });
+    }
+    
+    // Validate user has access to this category's difficulty level
+    if (categoryExists.difficulty !== difficulty) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied: This category is not available for your difficulty level",
       });
     }
 

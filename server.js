@@ -9,6 +9,7 @@ require('dotenv').config();
 // Internal modules
 const connectDB = require('./utils/db');
 const { initializeSocket } = require('./controllers/leaderController');
+const { loadRegistrationData } = require('./utils/registrationService');
 const setupSwagger = require('./swagger');
 
 // Route imports
@@ -94,6 +95,10 @@ io.on('connection', (socket) => {
     
   });
 });
+
+// Load registration data from Excel
+console.log('📊 Loading registration data...');
+loadRegistrationData();
 
 // Database connection and server start
 connectDB().then(() => {
