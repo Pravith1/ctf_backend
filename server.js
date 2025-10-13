@@ -28,6 +28,7 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
   'https://ctf-frontend-sigma.vercel.app',
+  'https://ctf-frontend-xv91.vercel.app',
   process.env.FRONTEND_URL, // Add your deployed frontend URL in .env
 ].filter(Boolean); // Remove undefined values
 
