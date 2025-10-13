@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { validateAndGetDifficulty } = require('../utils/registrationService');
+const { getDifficultyFromExcel } = require('../utils/registrationService');
 
 // Helper: Generate JWT
 
@@ -32,17 +32,16 @@ exports.signup = async (req, res) => {
 			return res.status(400).json({ message: 'Year must be 1, 2, 3, or 4.' });
 		}
 		
-		// 🔥 NEW: Validate registration and get auto-assigned difficulty
-		const registrationResult = validateAndGetDifficulty(email, parseInt(year));
-		
-		if (!registrationResult.valid) {
+		// 🔥 Get difficulty from Excel based on roll number
+		let difficulty;
+		try {
+			difficulty = getDifficultyFromExcel(email);
+		} catch (error) {
 			return res.status(403).json({ 
-				message: registrationResult.error,
+				message: error.message,
 				hint: 'Please complete the registration form first before signing up.'
 			});
 		}
-		
-		const difficulty = registrationResult.difficulty;
 		
 		// Check if email already exists
 		const existingEmail = await User.findOne({ email });

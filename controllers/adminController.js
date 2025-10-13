@@ -6,7 +6,7 @@ const Question = require('../models/question');
 const User = require('../models/user');
 
 const getCategories = asyncHandler(async (req, res) => {
-  const categories = await Category.find().sort({ name: 1 });
+  const categories = await categoryModel.find({ difficulty: userDifficulty });
   res.status(200).json(new ApiResponse(200, categories, "Categories fetched"));
 });
 
