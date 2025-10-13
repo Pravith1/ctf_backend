@@ -6,6 +6,12 @@ const categorySchema = new mongoose.Schema({
     required: true,
     unique: true,
     trim: true
+  },
+  difficulty: {
+    type: String,
+    required: true,
+    enum: ['beginner', 'intermediate'],
+    trim: true
   }
 }, {
   timestamps: true

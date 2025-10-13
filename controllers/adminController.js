@@ -11,9 +11,17 @@ const getCategories = asyncHandler(async (req, res) => {
 });
 
 const createCategory = asyncHandler(async (req, res) => {
-  const { name } = req.body;
+  const { name, difficulty } = req.body;
   if (!name) {
     return res.status(400).json(new ApiResponse(400, null, "Category name required"));
+  }
+
+  if (!difficulty) {
+    return res.status(400).json(new ApiResponse(400, null, "Category difficulty required"));
+  }
+
+  if (!['beginner', 'intermediate'].includes(difficulty)) {
+    return res.status(400).json(new ApiResponse(400, null, "Difficulty must be either 'beginner' or 'intermediate'"));
   }
 
   let category = await Category.findOne({ name: name.trim() });
@@ -21,16 +29,20 @@ const createCategory = asyncHandler(async (req, res) => {
     return res.status(400).json(new ApiResponse(400, null, "Category already exists"));
   }
 
-  category = await Category.create({ name: name.trim() });
+  category = await Category.create({ name: name.trim(), difficulty });
   res.status(201).json(new ApiResponse(201, category, "Category created"));
 });
 
 const updateCategory = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { name } = req.body;
+  const { name, difficulty } = req.body;
 
   if (!name || !name.trim()) {
     return res.status(400).json(new ApiResponse(400, null, "Category name required"));
+  }
+
+  if (difficulty && !['beginner', 'intermediate'].includes(difficulty)) {
+    return res.status(400).json(new ApiResponse(400, null, "Difficulty must be either 'beginner' or 'intermediate'"));
   }
 
   const normalizedName = name.trim();
@@ -44,9 +56,14 @@ const updateCategory = asyncHandler(async (req, res) => {
     return res.status(400).json(new ApiResponse(400, null, "Category already exists"));
   }
 
+  const updateData = { name: normalizedName };
+  if (difficulty) {
+    updateData.difficulty = difficulty;
+  }
+
   const category = await Category.findByIdAndUpdate(
     id,
-    { name: normalizedName },
+    updateData,
     { new: true }
   );
 
