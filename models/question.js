@@ -8,7 +8,7 @@ const questionSchema = new mongoose.Schema({
   },
   categoryId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'category',
+    ref: 'Category',
     required: true
   },
   year: {
@@ -53,4 +53,4 @@ questionSchema.index({ year: 1 });
 questionSchema.index({ point: 1 });
 questionSchema.index({ solved_count: -1 }); // For popular questions queries
 
-module.exports = mongoose.model('question', questionSchema);
+module.exports = mongoose.model('Question', questionSchema);

@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const submissionSchema = new mongoose.Schema({
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user',
+    ref: 'User',
     required: true
   },
   question_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'question',
+    ref: 'Question',
     required: true
   },
   iscorrect: {
@@ -30,8 +30,8 @@ const submissionSchema = new mongoose.Schema({
 
 // Index for better query performance
 submissionSchema.index({ user_id: 1 });
-submissionSchema.index({ questions_id: 1 });
+submissionSchema.index({ question_id: 1 });
 submissionSchema.index({ iscorrect: 1 });
 submissionSchema.index({ submitted_at: -1 }); // For recent submissions queries
 
-module.exports = mongoose.model('submission', submissionSchema);
+module.exports = mongoose.model('Submission', submissionSchema);

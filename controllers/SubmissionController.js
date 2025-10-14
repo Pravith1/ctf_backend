@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Submission = require("../models/submission");
 const User = require("../models/user"); // Changed from Team to User
 const Question = require("../models/question");
-const categoryModel = require("../models/category");
+const Category = require("../models/category");
 const { emitLeaderboardUpdate, emitNewSolve } = require("./leaderController");
 
 
@@ -48,7 +48,8 @@ const getQuestion = async (req, res) => {
 const fetchCategories = async (req, res) => {
   try {
     const userDifficulty = req.user.difficulty;
-    const categories = await categoryModel.find({ difficulty: userDifficulty });
+    console.log("User difficulty:", userDifficulty);
+    const categories = await Category.find({ difficulty: userDifficulty });
     res.status(200).json({
       success: true,
       data: categories,
@@ -77,7 +78,7 @@ const fetchQuestions = async (req, res) => {
     }
 
     // Validate if category exists
-    const categoryExists = await categoryModel.findById(categoryId);
+    const categoryExists = await Category.findById(categoryId);
     if (!categoryExists) {
       return res.status(404).json({
         success: false,
@@ -139,7 +140,7 @@ const fetchSolvedQuestions = async (req, res) => {
     }
 
     // Validate if category exists
-    const categoryExists = await categoryModel.findById(categoryId);
+    const categoryExists = await Category.findById(categoryId);
     if (!categoryExists) {
       return res.status(404).json({
         success: false,
@@ -272,7 +273,7 @@ const fetchIncorrectSubmissions = async (req, res) => {
     }
 
     // Validate if category exists
-    const categoryExists = await categoryModel.findById(categoryId);
+    const categoryExists = await Category.findById(categoryId);
     if (!categoryExists) {
       return res.status(404).json({
         success: false,
