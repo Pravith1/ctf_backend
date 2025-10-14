@@ -3,8 +3,8 @@ const router = express.Router();
 const adminController = require('../controllers/adminController');
 
 // middleware provided for authentication and admin check
-const { isAdmin } = require('../Middleware/auth');
-const {verifyToken} = require('../Middleware/validate');
+const { isAdmin } = require('../middleware/auth');
+const {verifyToken} = require('../middleware/validate');
 
 /**
  * @swagger
