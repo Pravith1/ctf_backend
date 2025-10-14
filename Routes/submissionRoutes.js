@@ -9,7 +9,7 @@ const {
   fetchIncorrectSubmissions,
   isSolvedQuestion
 } = require('../controllers/SubmissionController');
-const { verifyToken } = require('../middleware/validate');
+const { verifyToken } = require('../Middleware/validate');
 
 /**
  * @swagger
