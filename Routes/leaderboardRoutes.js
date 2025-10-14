@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getLeaderboard } = require('../controllers/leaderController');
-const {verifyToken} = require('../Middleware/validate');
+const {verifyToken} = require('../middleware/validate');
 
 /**
  * @swagger
