@@ -21,7 +21,7 @@ const getQuestion = async (req, res) => {
     // Find question but exclude the answer field for security
     const question = await Question.findById(question_id)
       .populate('categoryId', 'name')
-      .select('title description link point year solved_count createdAt difficulty categoryId') // Exclude 'answer' field
+      .select('title description link point year solved_count createdAt difficulty categoryId') // Include 'link' field
       .lean();
 
     if (!question) {
@@ -31,9 +31,22 @@ const getQuestion = async (req, res) => {
       });
     }
 
+    // Debug: Log the question object to see what fields are present
+    console.log("Raw question from DB:", question);
+    console.log("Link field value:", question.link);
+    console.log("Has link property:", question.hasOwnProperty('link'));
+
+    // Ensure link field is always included (even if null)
+    const questionData = {
+      ...question,
+      link: question.link || null // Explicitly include link field
+    };
+
+    console.log("Final question data:", questionData);
+
     res.status(200).json({
       success: true,
-      data: question,
+      data: questionData,
       message: "Question fetched successfully",
     });
   } catch (error) {
