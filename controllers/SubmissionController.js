@@ -21,7 +21,7 @@ const getQuestion = async (req, res) => {
     // Find question but exclude the answer field for security
     const question = await Question.findById(question_id)
       .populate('categoryId', 'name')
-      .select('title description point year solved_count createdAt difficulty categoryId') // Exclude 'answer' field
+      .select('title description link point year solved_count createdAt difficulty categoryId') // Exclude 'answer' field
       .lean();
 
     if (!question) {
@@ -102,7 +102,7 @@ const fetchQuestions = async (req, res) => {
 
     const questions = await Question.find(questionsQuery)
       .populate('categoryId', 'name')
-      .select('title description point year solved_count createdAt difficulty') // Removed 'answer' for security
+      .select('title description link point year solved_count createdAt difficulty') // Removed 'answer' for security
       .sort({ point: -1, createdAt: -1 }) // Sort by points descending, then by newest
       .lean(); // Use lean() for better performance
 
@@ -183,6 +183,7 @@ const fetchSolvedQuestions = async (req, res) => {
       _id: submission.question_id._id,
       title: submission.question_id.title,
       description: submission.question_id.description,
+      link: submission.question_id.link,
       point: submission.question_id.point,
       year: submission.question_id.year,
       difficulty: submission.question_id.difficulty,
@@ -295,7 +296,7 @@ const fetchIncorrectSubmissions = async (req, res) => {
       difficulty: difficulty
     })
     .populate('categoryId', 'name')
-    .select('title description point year solved_count createdAt difficulty')
+    .select('title description link point year solved_count createdAt difficulty')
     .sort({ point: -1, createdAt: -1 })
     .lean();
 
