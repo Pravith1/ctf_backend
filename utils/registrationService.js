@@ -51,7 +51,7 @@ const getDifficultyFromExcel = (email) => {
       const row = registrationCache[i];
       
       // Get all "Roll No" columns (Excel may have Roll No, Roll No__1, Roll No__2, etc.)
-      const rollNoColumns = Object.keys(row).filter(key => key.startsWith('Roll No'));
+      const rollNoColumns = Object.keys(row).filter(key => key.startsWith('Roll no'));
       
       // Check if rollNo matches any of the Roll No columns
       for (const column of rollNoColumns) {
