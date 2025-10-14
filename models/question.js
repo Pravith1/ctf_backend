@@ -53,4 +53,4 @@ questionSchema.index({ year: 1 });
 questionSchema.index({ point: 1 });
 questionSchema.index({ solved_count: -1 }); // For popular questions queries
 
-module.exports = mongoose.model('Question', questionSchema);
+module.exports = mongoose.model('question', questionSchema);

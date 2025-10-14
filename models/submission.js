@@ -34,4 +34,4 @@ submissionSchema.index({ questions_id: 1 });
 submissionSchema.index({ iscorrect: 1 });
 submissionSchema.index({ submitted_at: -1 }); // For recent submissions queries
 
-module.exports = mongoose.model('Submission', submissionSchema);
+module.exports = mongoose.model('submission', submissionSchema);
