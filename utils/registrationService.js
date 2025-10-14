@@ -10,7 +10,7 @@ let registrationCache = null;
  */
 const loadRegistrationData = () => {
   try {
-    const filePath = path.join(__dirname, '..', 'data', 'registrations.xlsx');
+    const filePath = path.join(__dirname, '..', 'data', 'Testing.xlsx');
     const workbook = XLSX.readFile(filePath);
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
