@@ -6,8 +6,7 @@ const Question = require('../models/question');
 const User = require('../models/user');
 
 const getCategories = asyncHandler(async (req, res) => {
-  const userDifficulty = req.user.difficulty;
-const categories = await Category.find({ difficulty: userDifficulty });
+  const categories = await categoryModel.find({ difficulty: userDifficulty });
   res.status(200).json(new ApiResponse(200, categories, "Categories fetched"));
 });
 
@@ -100,7 +99,7 @@ const getQuestions = asyncHandler(async (req, res) => {
 });
 
 const createQuestion = asyncHandler(async (req, res) => {
-  const { category, title, description, answer, point, year, difficulty } = req.body;
+  const { category, title, description, hint, answer, point, year, difficulty } = req.body;
 
   if (!category || !title || !description || !answer || !point || !year || !difficulty) {
     return res.status(400).json({

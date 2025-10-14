@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Submission = require("../models/submission");
 const User = require("../models/user"); // Changed from Team to User
 const Question = require("../models/question");
-const Category = require("../models/category");
+const categoryModel = require("../models/category");
 const { emitLeaderboardUpdate, emitNewSolve } = require("./leaderController");
 
 
@@ -21,8 +21,10 @@ const getQuestion = async (req, res) => {
     // Find question but exclude the answer field for security
     const question = await Question.findById(question_id)
       .populate('categoryId', 'name')
-      .select('title description link point year solved_count createdAt difficulty categoryId') // Include 'link' field
+      .select('title description hint point year solved_count createdAt difficulty categoryId') // Exclude 'answer' field
       .lean();
+
+    console.log("Fetched Question:", question); // Debug log
 
     if (!question) {
       return res.status(404).json({
@@ -30,23 +32,12 @@ const getQuestion = async (req, res) => {
         message: "Question not found",
       });
     }
-
-    // Debug: Log the question object to see what fields are present
-    console.log("Raw question from DB:", question);
-    console.log("Link field value:", question.link);
-    console.log("Has link property:", question.hasOwnProperty('link'));
-
-    // Ensure link field is always included (even if null)
-    const questionData = {
-      ...question,
-      link: question.link || null // Explicitly include link field
-    };
-
-    console.log("Final question data:", questionData);
+    data=question;
+    data.hint=question.hint;
 
     res.status(200).json({
       success: true,
-      data: questionData,
+      data: data,
       message: "Question fetched successfully",
     });
   } catch (error) {
@@ -61,8 +52,7 @@ const getQuestion = async (req, res) => {
 const fetchCategories = async (req, res) => {
   try {
     const userDifficulty = req.user.difficulty;
-    console.log("User difficulty:", userDifficulty);
-    const categories = await Category.find({ difficulty: userDifficulty });
+    const categories = await categoryModel.find({ difficulty: userDifficulty });
     res.status(200).json({
       success: true,
       data: categories,
@@ -91,7 +81,7 @@ const fetchQuestions = async (req, res) => {
     }
 
     // Validate if category exists
-    const categoryExists = await Category.findById(categoryId);
+    const categoryExists = await categoryModel.findById(categoryId);
     if (!categoryExists) {
       return res.status(404).json({
         success: false,
@@ -115,7 +105,7 @@ const fetchQuestions = async (req, res) => {
 
     const questions = await Question.find(questionsQuery)
       .populate('categoryId', 'name')
-      .select('title description link point year solved_count createdAt difficulty') // Removed 'answer' for security
+      .select('title description hint point year solved_count createdAt difficulty') // Removed 'answer' for security
       .sort({ point: -1, createdAt: -1 }) // Sort by points descending, then by newest
       .lean(); // Use lean() for better performance
 
@@ -153,7 +143,7 @@ const fetchSolvedQuestions = async (req, res) => {
     }
 
     // Validate if category exists
-    const categoryExists = await Category.findById(categoryId);
+    const categoryExists = await categoryModel.findById(categoryId);
     if (!categoryExists) {
       return res.status(404).json({
         success: false,
@@ -196,7 +186,6 @@ const fetchSolvedQuestions = async (req, res) => {
       _id: submission.question_id._id,
       title: submission.question_id.title,
       description: submission.question_id.description,
-      link: submission.question_id.link,
       point: submission.question_id.point,
       year: submission.question_id.year,
       difficulty: submission.question_id.difficulty,
@@ -287,7 +276,7 @@ const fetchIncorrectSubmissions = async (req, res) => {
     }
 
     // Validate if category exists
-    const categoryExists = await Category.findById(categoryId);
+    const categoryExists = await categoryModel.findById(categoryId);
     if (!categoryExists) {
       return res.status(404).json({
         success: false,
@@ -309,7 +298,7 @@ const fetchIncorrectSubmissions = async (req, res) => {
       difficulty: difficulty
     })
     .populate('categoryId', 'name')
-    .select('title description link point year solved_count createdAt difficulty')
+    .select('title description hint point year solved_count createdAt difficulty')
     .sort({ point: -1, createdAt: -1 })
     .lean();
 
