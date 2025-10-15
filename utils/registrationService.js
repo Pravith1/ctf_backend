@@ -10,7 +10,7 @@ let registrationCache = null;
  */
 const loadRegistrationData = () => {
   try {
-    const filePath = path.join(__dirname, '..', 'data', 'Testing.xlsx');
+    const filePath = path.join(__dirname, '..', 'data', 'Registration.xlsx');
     const workbook = XLSX.readFile(filePath);
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
@@ -51,7 +51,7 @@ const getDifficultyFromExcel = (email) => {
       const row = registrationCache[i];
       
       // Get all "Roll No" columns (Excel may have Roll No, Roll No__1, Roll No__2, etc.)
-      const rollNoColumns = Object.keys(row).filter(key => key.startsWith('Roll no'));
+      const rollNoColumns = Object.keys(row).filter(key => key.startsWith('Roll No'));
       
       // Check if rollNo matches any of the Roll No columns
       for (const column of rollNoColumns) {
