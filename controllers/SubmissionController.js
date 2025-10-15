@@ -21,7 +21,7 @@ const getQuestion = async (req, res) => {
     // Find question but exclude the answer field for security
     const question = await Question.findById(question_id)
       .populate('categoryId', 'name')
-      .select('title description hint point year solved_count createdAt difficulty categoryId') // Exclude 'answer' field
+      .select('title description hint link point year solved_count createdAt difficulty categoryId') // Exclude 'answer' field
       .lean();
 
     console.log("Fetched Question:", question); // Debug log
