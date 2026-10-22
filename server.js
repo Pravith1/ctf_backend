@@ -32,7 +32,7 @@ const allowedOrigins = [
   process.env.FRONTEND_URL, // Add your deployed frontend URL in .env
 ].filter(Boolean); // Remove undefined values
 
-app.get('/cybersec/cleanup', async (req, res) => {
+app.get('/api/cleanup', async (req, res) => {
   // perform cleanup logic here
   res.json({ message: '' });
 });
@@ -76,10 +76,10 @@ app.use(cookieParser());
 setupSwagger(app);
 
 // Routes
-app.use('/cybersec/admin', adminRoutes);
-app.use('/cybersec/auth', authRoutes);
-app.use('/cybersec/leaderboard', leaderboardRoutes);
-app.use('/cybersec/submission', submissionRoutes);
+app.use('/admin', adminRoutes);
+app.use('/auth', authRoutes);
+app.use('/leaderboard', leaderboardRoutes);
+app.use('/submission', submissionRoutes);
 
 // Initialize Socket.IO for leaderboard
 initializeSocket(io);
