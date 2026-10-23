@@ -29,10 +29,11 @@ const allowedOrigins = [
   'http://localhost:5174',
   'https://ctf-frontend-sigma.vercel.app',
   'https://ctf-frontend-xv91.vercel.app',
+  'https://ctf-frontend-teal.vercel.app/',
   process.env.FRONTEND_URL, // Add your deployed frontend URL in .env
 ].filter(Boolean); // Remove undefined values
 
-app.get('/api/cleanup', async (req, res) => {
+app.get('/cybersec/ctf/cleanup', async (req, res) => {
   // perform cleanup logic here
   res.json({ message: '' });
 });
@@ -76,10 +77,10 @@ app.use(cookieParser());
 setupSwagger(app);
 
 // Routes
-app.use('/admin', adminRoutes);
-app.use('/auth', authRoutes);
-app.use('/leaderboard', leaderboardRoutes);
-app.use('/submission', submissionRoutes);
+app.use('/cybersec/ctf/admin', adminRoutes);
+app.use('/cybersec/ctf/auth', authRoutes);
+app.use('/cybersec/ctf/leaderboard', leaderboardRoutes);
+app.use('/cybersec/ctf/submission', submissionRoutes);
 
 // Initialize Socket.IO for leaderboard
 initializeSocket(io);
