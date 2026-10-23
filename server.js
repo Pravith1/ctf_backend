@@ -29,7 +29,7 @@ const allowedOrigins = [
   'http://localhost:5174',
   'https://ctf-frontend-sigma.vercel.app',
   'https://ctf-frontend-xv91.vercel.app',
-  'https://ctf-frontend-teal.vercel.app/',
+  'https://ctf-frontend-teal.vercel.app',
   process.env.FRONTEND_URL, // Add your deployed frontend URL in .env
 ].filter(Boolean); // Remove undefined values
 
@@ -56,7 +56,7 @@ app.use(cors({
 }));
 // Socket.IO setup with CORS
 const io = socketIo(server, {
-  path: '/socket.io',
+  path: '/cybersec/ctf/socket.io',
   cors: {
     origin: allowedOrigins, // use array directly — more reliable than a function
     methods: ['GET', 'POST'],
