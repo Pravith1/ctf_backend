@@ -56,7 +56,7 @@ app.use(cors({
 }));
 // Socket.IO setup with CORS
 const io = socketIo(server, {
-  path: '/socket.io',
+  path: '/cybersec/ctf/socket.io',
   cors: {
     origin: allowedOrigins, // use array directly — more reliable than a function
     methods: ['GET', 'POST'],
