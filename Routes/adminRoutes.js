@@ -189,7 +189,6 @@ router.get('/questions', verifyToken, isAdmin, adminController.getQuestions);
  *               - description
  *               - answer
  *               - point
- *               - year
  *               - difficulty
  *             properties:
  *               category:
@@ -207,9 +206,6 @@ router.get('/questions', verifyToken, isAdmin, adminController.getQuestions);
  *               point:
  *                 type: number
  *                 example: 100
- *               year:
- *                 type: number
- *                 example: 3
  *               difficulty:
  *                 type: string
  *                 enum: [beginner, intermediate]
@@ -342,5 +338,12 @@ router.patch('/questions/:id', verifyToken, isAdmin, adminController.updateQuest
  *         description: Forbidden - Not an admin
  */
 router.delete('/questions/:id', verifyToken, isAdmin, adminController.deleteQuestion);
+
+// ─── User Management Routes (Admin only) ────────────────────
+router.get('/users', verifyToken, isAdmin, adminController.getUsers);
+router.get('/users/:id', verifyToken, isAdmin, adminController.getUserById);
+router.patch('/users/:id', verifyToken, isAdmin, adminController.updateUser);
+router.delete('/users/:id', verifyToken, isAdmin, adminController.deleteUser);
+router.patch('/users/:id/reset-score', verifyToken, isAdmin, adminController.resetUserScore);
 
 module.exports = router;
